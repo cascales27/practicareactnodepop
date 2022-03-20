@@ -1,6 +1,7 @@
 
 import AdvertsPage from "./components/adverts/Adverts/AdvertsPage";
 import NewAdvertPage from "./components/adverts/Adverts/NewAdvertPage/NewAdvertPage";
+import LoginPage from "./components/auth/LoginPage/LoginPage";
 
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
     <div className={('App', { container })}>
       <AdvertsPage />
       <NewAdvertPage />
+      <LoginPage />
     </div>
   );
 }
