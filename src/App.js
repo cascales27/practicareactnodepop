@@ -1,16 +1,24 @@
-
+import { useState } from "react";
 import AdvertsPage from "./components/adverts/Adverts/AdvertsPage";
-import NewAdvertPage from "./components/adverts/Adverts/NewAdvertPage/NewAdvertPage";
+
+
 import LoginPage from "./components/auth/LoginPage/LoginPage";
 
 
-function App() {
-  const container = true;
+function App({ isInitiallyLogged }) {
+  const [ isLogged, setIsLogged] = useState(isInitiallyLogged);
+
+  const handleLogin = () => setIsLogged(true);
+
+  const handleLogout  = () => {
+    setIsLogged(false);
+  };
   return (
-    <div className={('App', { container })}>
-      <AdvertsPage />
-      <NewAdvertPage />
-      <LoginPage />
+    <div className='App'>
+      {/*<AdvertsPage />
+      <NewAdvertPage /> */}
+      {isLogged ? (<AdvertsPage isLogged={isLogged} onLogout={handleLogout}/> ) 
+      : (<LoginPage onLogin={handleLogin}/>)} 
     </div>
   );
 }

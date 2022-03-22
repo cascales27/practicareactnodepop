@@ -1,14 +1,18 @@
 
 import { useState } from "react";
 import Button from "../../common/Button";
+import { login } from "../service";
 
-function LoginPage() {
+function LoginPage({ onLogin }) {
 
     const [credentials, setCredentials] = useState({
         email: '',
         password: '',
         remember: false,
     });
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const { email, password, remember } = credentials;
 
@@ -22,8 +26,21 @@ function LoginPage() {
         }));
     };
 
-    const handlesubmit = (event) => {
+    const resetError = () => setError(null);
+
+    const handlesubmit = async event => {
         event.preventDefault();
+        try {
+            resetError();
+            setIsLoading(true);
+            await login(credentials);
+            setIsLoading(false);
+            onLogin();
+        } catch (error) {
+            setError(error);
+            setIsLoading(false);
+        }
+        
     }
     return (
 
@@ -53,9 +70,14 @@ function LoginPage() {
                 <Button
                     type="submit"
                     variant="primary"
-                    disabled={!email || !password}>
+                    disabled={!email || !password || isLoading}>
                     Entra</Button>
-            </form>
+                    </form>
+      {error && (
+        <div onClick={resetError} className="loginPage-error">
+          {error.message}
+        </div>
+      )}
         </div>
     );
 }

@@ -6,7 +6,7 @@ import { getLatestAdverts } from './service';
 import './AdvertPage.css';
 import Layout from '../../layout/Layout';
 
-const AdvertsPage = () => {
+const AdvertsPage = ( { isLogged, onLogout }) => {
     const [adverts, setAdverts] = useState([]);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ const AdvertsPage = () => {
 
    
     return (
-        <Layout title="Mira todos los anuncios">
+        <Layout title="Mira todos los anuncios" isLogged={isLogged} onLogout={onLogout}>
     <div className="advertsPage">
         <ul>
             {adverts.map(advert => (
