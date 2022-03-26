@@ -1,5 +1,5 @@
 
-import Layout from '../../../layout/Layout.js';
+import Layout from '../../layout/Layout.js';
 
 
 const NewAdvertPage = () => {

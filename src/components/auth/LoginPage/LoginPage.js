@@ -1,41 +1,39 @@
-
+import T from "prop-types";
 import { useState } from "react";
 import Button from "../../common/Button";
 import { login } from "../service";
+import { FormField } from "../../common";
+import { AuthContextConsumer } from "../context"; 
 
-function LoginPage({ onLogin }) {
+function LoginPage({ onLogin, history, location }) {
 
-    const [credentials, setCredentials] = useState({
-        email: '',
-        password: '',
-        remember: false,
-    });
+    const [value, setValue] = useState({ email: "", password: "" });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const { email, password, remember } = credentials;
+    const resetError = () => setError(null);
 
-    const handleChange = event => {
-        setCredentials(credentials => ({
-            ...credentials,
-            [event.target.name]:
-             event.target.type === 'checkbox'
-              ? event.target.checked
-              : event.target.value,
+    const handleChange = (event) => {
+        setValue((prevState) =>({
+            ...prevState,
+            [event.target.name]: event.target.value,
         }));
     };
-
-    const resetError = () => setError(null);
+    
 
     const handlesubmit = async event => {
         event.preventDefault();
+        setIsLoading(true);
+        resetError();
+            
         try {
-            resetError();
-            setIsLoading(true);
-            await login(credentials);
+            await login(value);
             setIsLoading(false);
             onLogin();
+            const { from } = location.state || { from: { pathname: "/ads"}
+            };
+            history.replace(from);
         } catch (error) {
             setError(error);
             setIsLoading(false);
@@ -47,30 +45,30 @@ function LoginPage({ onLogin }) {
         <div className="loginPage">
             <h1 className="loginPage-title">Entra en la tienda</h1>
             <form onSubmit={handlesubmit}>
-                <input
-                    type="text"
+                <FormField
+                    type="email"
                     name="email"
-                    value={email}
+                    value={value.email}
                     onChange={handleChange}
 
                 />
-                <input
+                <FormField
                     type="password"
                     name="password"
-                    value={password}
+                    value={value.password}
                     onChange={handleChange}
                 />
 
-                <input
+                <FormField
                     type="checkbox"
                     name="remember"
-                    checked={remember}
+                    checked={value.remember}
                     onChange={handleChange}
-                ></input>
+                ></FormField>
                 <Button
                     type="submit"
                     variant="primary"
-                    disabled={!email || !password || isLoading}>
+                    disabled={isLoading || !value.email || !value.password}>
                     Entra</Button>
                     </form>
       {error && (
@@ -82,4 +80,15 @@ function LoginPage({ onLogin }) {
     );
 }
 
-export default LoginPage;
+LoginPage.propTypes = {
+    onLogin: T.func.isRequired,
+};
+
+const ConnectedLoginPage = (props) => (
+    <AuthContextConsumer>
+        {(auth) => <LoginPage onLogin={auth.handleLogin} {...props} />}
+    </AuthContextConsumer>
+)
+
+export default ConnectedLoginPage;
+

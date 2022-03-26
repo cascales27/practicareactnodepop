@@ -1,7 +1,7 @@
 
 import { useState, useEffect} from 'react';
-import { getLatestAdverts } from './service';
-
+import { getLatestAdverts } from '../service';
+import Button from '../../common/Button';
 
 import './AdvertPage.css';
 import Layout from '../../layout/Layout';

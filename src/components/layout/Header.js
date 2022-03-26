@@ -1,7 +1,9 @@
+import React from "react";
 import Button from "../common/Button";
-
+import { Link } from "react-router-dom";
 import logo from '../../assets/icono.svg';
 import { logout } from "../auth/service";
+
 function Header ({ className, isLogged, onLogout}) {
     const handleLogoutClick = async () => {
         await logout();
@@ -9,17 +11,17 @@ function Header ({ className, isLogged, onLogout}) {
     }
     return (
         <header>
+            <Link to="/">
             <div>
                 <img src={logo} alt="logo"></img>
             </div>
+            </Link>
             <nav>
-                {isLogged ? (
-                    <Button onClick={handleLogoutClick}>
-                        Logout
-                    </Button>
-                ) : (
-                <Button variant="primary">Login</Button>
-                )}
+                <Button as={Link} to="advert"
+                variant="primary">Nuevo anuncio</Button>
+                <Button as={Link} to="/"
+                variant="primary">Principal</Button>
+                
             </nav>
         </header>
     );
