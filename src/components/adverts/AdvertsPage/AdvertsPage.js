@@ -1,29 +1,55 @@
-
 import { useState, useEffect} from 'react';
-import { getLatestAdverts } from '../service';
+import { Link } from 'react-router-dom';
+import { getAdverts } from '../service';
+import Page from '../../layout/Page';
+import Advert from './Advert.js';
 import Button from '../../common/Button';
 
-import './AdvertPage.css';
-import Layout from '../../layout/Layout';
-
-const AdvertsPage = ( { isLogged, onLogout }) => {
-    const [adverts, setAdverts] = useState([]);
-
-    useEffect(() => {
-        getLatestAdverts().then(adverts => setAdverts(adverts));
-    }, []);
-
-   
-    return (
-        <Layout title="Mira todos los anuncios" isLogged={isLogged} onLogout={onLogout}>
-    <div className="advertsPage">
-        <ul>
-            {adverts.map(advert => (
-                <li key={advert.id}>{advert.content}</li>
-            ))}
-        </ul>
+const EmptyList = () => (
+    <div>
+        <p>Publica tu primer anuncio</p>
+        <Button as={Link} to='/adverts/new' variant='primary'>Nuevo anuncio</Button>
     </div>
-    </Layout>
-    );
+);
+
+const useAdverts = () => {
+    const [adverts, setAdverts] = useState([]);
+    useEffect(() => {
+        const execute = async () => {
+            const adverts = await getAdverts();
+            setAdverts(adverts);
+        };
+        execute();
+        return () => {};
+    }, []);
+    return adverts;
 };
+
+const AdvertsPage = () => {
+    const adverts = useAdverts();
+    return (
+
+        <Page title='Cascalespop'>
+          {adverts.length ? (
+            <div >
+              {/*<Filters/>*/}
+              
+              <h2>Advert list:</h2>
+              <div>
+              {adverts.map((advert) => (
+                <li key={advert.id}>
+                  <Link to={`/adverts/${advert.id}`}>
+                    <Advert {...advert} />
+                  </Link>
+                </li>
+              ))}
+              </div>
+            </div>
+          ) : (
+            <EmptyList />
+          )}
+        </Page>
+    );
+  };
+
 export default AdvertsPage;

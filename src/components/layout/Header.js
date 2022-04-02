@@ -1,26 +1,33 @@
+import classNames from 'classnames';
 import React from "react";
 import Button from "../common/Button";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import logo from '../../assets/icono.svg';
-import { logout } from "../auth/service";
+import AuthButton from "../auth/AuthButton";
 
-function Header ({ className, isLogged, onLogout}) {
-    const handleLogoutClick = async () => {
-        await logout();
-        onLogout();
-    }
+function Header ({ className}) {
+   
     return (
-        <header>
+        <header className={classNames('header', className)}>
             <Link to="/">
             <div>
                 <img src={logo} alt="logo"></img>
             </div>
             </Link>
             <nav>
-                <Button as={Link} to="advert"
-                variant="primary">Nuevo anuncio</Button>
-                <Button as={Link} to="/"
-                variant="primary">Principal</Button>
+             <NavLink
+             to="/adverts/new"
+             >
+                 Nuevo anuncio
+             </NavLink>
+
+             <NavLink
+             to="/adverts"
+             >
+                 Ver todos los anuncios
+             </NavLink>
+
+             <AuthButton></AuthButton>
                 
             </nav>
         </header>

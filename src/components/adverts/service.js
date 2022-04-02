@@ -2,29 +2,14 @@ import client from "../../api/client";
 
 const advertsBaseUrl = '/api/v1/adverts';
 
-export const getLatestAdverts = (name, price, tags, sale)=> {
-    let filters = "";
-    if (name) {
-        filters += `name=${name}`;
-    }
-    const url = `${advertsBaseUrl}?${filters}`;
+export const getAdverts = ()=> {
+    const url = `${advertsBaseUrl}`;
     return client.get(url);
 };
 
-export const createAdvert = async (advert) => {
-    const newAdvert = new FormData();
-    newAdvert.append("name", advert.name);
-    newAdvert.append("sale", advert.sale);
-    newAdvert.append("price", advert.price);
-    newAdvert.append("tags", [advert.tags]);
-    newAdvert.append("photo", advert.photo);
-
-    const url = `${advertsBaseUrl}`;
-    try {
-        await client.post(url, newAdvert);
-    } catch (error) {
-        console.log(error);
-    }
+export const createAdvert =  (advert) => {
+    const url = advertsBaseUrl;
+    return client.post(url, advert)
 };
 
 export const getAdvert = (advertId) => {

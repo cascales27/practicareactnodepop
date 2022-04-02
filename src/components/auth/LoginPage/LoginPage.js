@@ -1,45 +1,67 @@
 import T from "prop-types";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Button from "../../common/Button";
 import { login } from "../service";
-import { FormField } from "../../common";
-import { AuthContextConsumer } from "../context"; 
+import FormField from "../../common/FormField";
 
-function LoginPage({ onLogin, history, location }) {
+import { useLocation, useNavigate } from "react-router-dom";
 
-    const [value, setValue] = useState({ email: "", password: "" });
+function LoginPage({ onLogin }) {
+
+    const ref = useRef(null);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const [ credentials, setCredentials] = useState({
+        email: "",
+        password: "",
+        remember: false,
+    });
+
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const resetError = () => setError(null);
+    useEffect(() => {
+        ref.current.focus();
+    }, []);
 
-    const handleChange = (event) => {
-        setValue((prevState) =>({
-            ...prevState,
-            [event.target.name]: event.target.value,
+    const { email, password, remember} = credentials;
+
+    const handleChange = useCallback((event) => {
+        setCredentials((credentials) => ({
+            ...credentials,
+            [event.target.name]:
+            event.target.type === "checkbox"
+            ? event.target.checked
+            : event.target.value,
         }));
-    };
-    
+    }, []);
+    const resetError = () => setError(null);
 
     const handlesubmit = async event => {
         event.preventDefault();
-        setIsLoading(true);
-        resetError();
-            
+        
         try {
-            await login(value);
+            resetError();
+            setIsLoading(true);
+            await login(credentials);
             setIsLoading(false);
             onLogin();
-            const { from } = location.state || { from: { pathname: "/ads"}
-            };
-            history.replace(from);
+            const from = location.state?.from?.pathname || "/";
+            navigate(from, { replace: true });
         } catch (error) {
             setError(error);
             setIsLoading(false);
         }
         
-    }
+    };
+
+    const buttonDisabled = useMemo(() => {
+        return !email || !password || isLoading;
+    }, [email, password, isLoading]);
+
     return (
 
         <div className="loginPage">
@@ -48,27 +70,30 @@ function LoginPage({ onLogin, history, location }) {
                 <FormField
                     type="email"
                     name="email"
-                    value={value.email}
+                    label="email"
+                    value={email}
                     onChange={handleChange}
-
+                    ref={ref}
                 />
                 <FormField
                     type="password"
                     name="password"
-                    value={value.password}
+                    label="password"
+                    value={password}
                     onChange={handleChange}
+                    ref={ref}
                 />
 
                 <FormField
                     type="checkbox"
                     name="remember"
-                    checked={value.remember}
+                    checked={remember}
                     onChange={handleChange}
                 ></FormField>
                 <Button
                     type="submit"
                     variant="primary"
-                    disabled={isLoading || !value.email || !value.password}>
+                    disabled={buttonDisabled}>
                     Entra</Button>
                     </form>
       {error && (
@@ -80,15 +105,10 @@ function LoginPage({ onLogin, history, location }) {
     );
 }
 
+
 LoginPage.propTypes = {
-    onLogin: T.func.isRequired,
+    onLogin: T.func,
 };
 
-const ConnectedLoginPage = (props) => (
-    <AuthContextConsumer>
-        {(auth) => <LoginPage onLogin={auth.handleLogin} {...props} />}
-    </AuthContextConsumer>
-)
-
-export default ConnectedLoginPage;
+export default LoginPage;
 

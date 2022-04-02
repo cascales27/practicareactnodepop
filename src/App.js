@@ -1,12 +1,12 @@
+import React from "react";
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import RequireAtuh from "./components/auth/RequireAuth";
 import AdvertsPage from "./components/adverts/AdvertsPage/AdvertsPage";
-import AdvertPage from "./components/adverts/AdvertPage/AdvertPage"
-
-
-
+import AdvertPage from "./components/adverts/AdvertPage/AdvertPage";
+import NewAdvertPage from "./components/adverts/NewAdvertPage";
+import { AuthContextProvider } from "./components/auth/context";
 import LoginPage from "./components/auth/LoginPage/LoginPage";
-import NewAdvertPage from "./components/adverts/NewAdvertPage/NewAdvertPage";
 
 
 function App({ isInitiallyLogged }) {
@@ -17,21 +17,48 @@ function App({ isInitiallyLogged }) {
   const handleLogout  = () => {
     setIsLogged(false);
   };
+
+
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/api/auth/login" element={<LoginPage onLogin={handleLogin}/>}/>
-        <Route path="/api/v1/adverts" element={<AdvertsPage isLogged={isLogged} onLogout={handleLogout}/>} />
-        <Route path="api/v1/adverts/:advertId" element={<AdvertPage />}></Route>
-        <Route path="api/v1/adverts" element={<NewAdvertPage />}></Route>
-        <Route path="/" element={<Navigate to="/api/v1/auth" />}></Route>
-        <Route path="/404" element={<div>404 | Not Found Page</div>}></Route>
-        <Route path="*" element={<Navigate to="/404" />}></Route>
-      </Routes>
-      {/*<AdvertsPage />
-      <NewAdvertPage /> */}
+  
+      <AuthContextProvider value={{ isLogged, handleLogin, handleLogout}}>
+        <Routes>
+      
+       
+        
+            <Route path="/login" element={<LoginPage onLogin={handleLogin} />}
+               />
+          
+            <Route path="/adverts"
+             element={<RequireAtuh>
+               <AdvertsPage />
+             </RequireAtuh>}/>
+
+
+            <Route path="/adverts/new"
+             element={
+               <RequireAtuh>
+                 <NewAdvertPage />
+               </RequireAtuh>} />
+
+            <Route path="/adverts/:advertId"
+             element={<RequireAtuh>
+               <AdvertPage />
+             </RequireAtuh>} />
+
+
+            <Route path="/" element={<Navigate to="/adverts" />} />
+
+            <Route path="/404" element={<div>404 || Pagina no encontrada</div>} />
+              
+        
+            <Route path="*" element={<Navigate to="/404" />}/>
+        
+       
+            </Routes>
+      </AuthContextProvider>
     
-    </div>
+  
   );
 }
 

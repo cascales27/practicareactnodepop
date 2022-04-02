@@ -1,13 +1,12 @@
-import React from "react";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 
-function Layout({ children, title, isLogged, onLogout}) {
+function Layout() {
     return (
         <div>
-        <Header isLogged={isLogged} onLogout={onLogout}/>
+        <Header />
                 <main>
-                    <h2>{title}</h2>
-                    <section>{children}</section>
+                    <Outlet></Outlet>
                 </main>
                 <footer>© 2022 Cascales ventas</footer>
         </div>

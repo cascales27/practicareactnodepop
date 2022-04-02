@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import Page from '../../layout/Page';
-import { getAdvert } from '../service';
+import { getAdvert, deleteAdvert } from '../service';
+import Advert from '../AdvertsPage/Advert';
+
 
 class AdvertPage extends React.Component {
   constructor(props) {
@@ -10,16 +12,16 @@ class AdvertPage extends React.Component {
       advert: null,
       error: null,
       isLoading: false,
-    };
-  }
+    }
+  };
 
   handleGetAdvert = async () => {
     this.setState({ isLoading: true, error: null });
     try {
-      const advert = await getAdvert(this.props.AdvertId);
+      const advert = await getAdvert(this.props.advertId);
       this.setState({ advert, isLoading: false });
     } catch (error) {
-      this.setState({ isLoading: false, error });
+      this.setState({ isLoading:false, error});
     }
   };
 
@@ -28,19 +30,13 @@ class AdvertPage extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.advertId !== this.props.AdvertId) {
+    if ( prevProps.advertId !== this.props.advertId) {
       this.handleGetAdvert();
     }
   }
 
-  componentWillUnmount() {
-    console.log('unmont');
-  }
-
   render() {
     const { advert, error, isLoading } = this.state;
-
-   
     if (error?.status === 401) {
       return <Navigate to="/login" />;
     }
@@ -49,25 +45,17 @@ class AdvertPage extends React.Component {
       return <Navigate to="/404" />;
     }
 
-    return (
-      <Page title="Advert detail">
-        <div>{advert ? JSON.stringify(advert) : 'Nothing to show'}</div>
-      </Page>
-    );
+    return ( <Page title="Detalle anuncio">
+      <Advert {...advert}></Advert>
+    </Page>);
   }
 }
+  const AdvertPageFunction = () => {
+    const ref = useRef(null);
+    const { advertId } = useParams();
+    useEffect(() => {}, []);
 
-
-
-const AdvertPageFunction = () => {
-  const ref = useRef(null);
-  const { advertId } = useParams();
-
-  useEffect(() => {
-    console.log('ref', ref.current);
-  }, []);
-
-  return <AdvertPage ref={ref} advertId={advertId} />;
-};
+    return <AdvertPage ref={ref} advertId={advertId} />;
+  };
 
 export default AdvertPageFunction;
